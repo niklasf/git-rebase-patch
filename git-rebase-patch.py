@@ -36,10 +36,11 @@ def main():
     # Doesn't work in bare repositories.
     # TODO: Support bare repositories.
     if repo.bare:
-        print "Repo bare."
+        print 'Bare repositories not supported.'
+        return
 
     if repo.is_dirty():
-        print "Repo is dirty."
+        print 'Working copy is dirty. Commit or stash changes before proceeding.'
         return
 
     # TODO: Interactively warn.
