@@ -12,7 +12,11 @@ def main():
     # Initialize a repo object.
     Git.git_binary = 'git'
     repo = Repo('.')
-    commit = repo.commit('HEAD')
+    try:
+        oldref = repo.active_branch.name
+    except:
+        oldref = repo.commit('HEAD').hexsha
+
 
     # Parse arguments.
     usage = 'usage: %prog [-p0] [(-b | --branch) <branch>] <patch>'
@@ -72,7 +76,7 @@ def main():
     except:
         # Restore state.
         sys.stdout.write("\n")
-        repo.git.checkout(commit.hexsha)
+        repo.git.checkout(oldref)
         if options.branch:
             repo.git.branch('-d', options.branch)
         print 'Fail. Restored working copy.'
@@ -83,7 +87,7 @@ def main():
 
     # Do the rebase.
     print 'Starting rebase now.'
-    repo.git.rebase(commit.hexsha)
+    repo.git.rebase(oldref)
 
 if __name__ == '__main__':
     main()
