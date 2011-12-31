@@ -3,6 +3,7 @@
 """
 """
 
+import sys
 import optparse
 
 from git import Git, Repo
@@ -63,10 +64,16 @@ def main():
     looping = True
     while looping:
         try:
+            sys.stdout.write('Trying to apply against: ' + repo.commit('HEAD').hexsha + "\r")
+            sys.stdout.flush()
             repo.git.apply(patch_style, patch)
             looping = False
         except:
             repo.git.reset('--hard', 'HEAD~1')
+    sys.stdout.write("\n")
+
+    # Commit.
+    repo.git.commit('-a', '-m', patch)
 
     # Do the rebase.
     print 'Starting rebase now.'
