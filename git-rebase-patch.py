@@ -16,11 +16,16 @@ def main():
     usage = 'usage: %prog [-p0] [(-b | --branch) <branch>] <patch>'
     description = 'Finds a commit the patch applies against and rebases.'
     parser = optparse.OptionParser(usage, description = description)
-    parser.add_option('-p', dest = 'p', default = 1,
+    parser.add_option('-p', dest = 'p', default = '1',
         help = 'Indicates an old p0 style patch.')
     parser.add_option('-b', '--branch', dest = 'branch', default = None,
-        help = 'Checkout a branch before rebasing.')
+        help = 'Checkout a new branch before rebasing.')
     options, args = parser.parse_args()
+
+    # Validate the patch style argument.
+    patch_style = '-p' + options.p
+    if not patch_style in ['-p0', '-p1']:
+        parser.error('Unkown patch style: ' + patch_style)
 
     # Get the patch file path.
     if (len(args) != 1):
