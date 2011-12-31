@@ -23,13 +23,18 @@ def main():
         print "Repo is dirty."
         return
 
-    for file in (repo.untracked_files):
-      if not file.endswith('.patch'):
-        print "Untracked non patch file."
-        return
+#    for file in (repo.untracked_files):
+#      if not file.endswith('.patch'):
+#        print "Untracked non patch file."
+#        return
 
-    repo.git.apply(sys.argv[1])
-
+    looping = True
+    while looping:
+        try:
+            repo.git.apply('-p0', sys.argv[1])
+            looping = False
+        except:
+            repo.git.reset('--hard', 'HEAD~1')
 
 if __name__ == '__main__':
     main()
