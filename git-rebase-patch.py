@@ -11,6 +11,7 @@ def main():
     # Initialize a repo object.
     Git.git_binary = 'git'
     repo = Repo('.')
+    commit = repo.commit('HEAD')
 
     # Parse arguments.
     usage = 'usage: %prog [-p0] [(-b | --branch) <branch>] <patch>'
@@ -46,18 +47,30 @@ def main():
     # TODO: Interactively warn.
     #for file in (repo.untracked_files):
     #  if not file.endswith('.patch'):
-    #    print "Untracked non patch file."
+    #    print 'Untracked non patch file.'
     #    return
 
-    # TODO: Make -p0 optional.
+    # TODO: Validate the patch.
+    # TODO: Error handling.
+
+    # Optionally checkout a new branch before starting.
+    if options.branch:
+        repo.git.checkout('-b', options.branch)
+
     # TODO: Try not to alter the working copy.
     # TODO: Start the rebase.
+    # TODO: Add status indications.
     looping = True
     while looping:
         try:
-            repo.git.apply('-p0', patch)
+            repo.git.apply(patch_style, patch)
             looping = False
         except:
             repo.git.reset('--hard', 'HEAD~1')
+
+    # Do the rebase.
+    print 'Starting rebase now.'
+    repo.git.rebase(commit.hexsha)
+
 if __name__ == '__main__':
     main()
