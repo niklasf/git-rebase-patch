@@ -52,25 +52,31 @@ def main():
     #    return
 
     # TODO: Validate the patch.
-    # TODO: Error handling.
 
     # Optionally checkout a new branch before starting.
     if options.branch:
         repo.git.checkout('-b', options.branch)
 
     # TODO: Try not to alter the working copy.
-    # TODO: Start the rebase.
-    # TODO: Add status indications.
-    looping = True
-    while looping:
-        try:
-            sys.stdout.write('Trying to apply against: ' + repo.commit('HEAD').hexsha + "\r")
-            sys.stdout.flush()
-            repo.git.apply(patch_style, patch)
-            looping = False
-        except:
-            repo.git.reset('--hard', 'HEAD~1')
-    sys.stdout.write("\n")
+    try:
+        looping = True
+        while looping:
+            try:
+                sys.stdout.write('Trying to apply against: ' + repo.commit('HEAD').hexsha + "\r")
+                sys.stdout.flush()
+                repo.git.apply(patch_style, patch)
+                looping = False
+            except:
+                repo.git.reset('--hard', 'HEAD~1')
+        sys.stdout.write("\n")
+    except:
+        # Restore state.
+        sys.stdout.write("\n")
+        repo.git.checkout(commit.hexsha)
+        if options.branch:
+            repo.git.branch('-d', options.branch)
+        print 'Fail. Restored working copy.'
+        return
 
     # Commit.
     repo.git.commit('-a', '-m', patch)
