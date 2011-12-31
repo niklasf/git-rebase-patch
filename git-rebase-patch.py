@@ -3,20 +3,30 @@
 """
 """
 
-import sys
+import optparse
 
 from git import Git, Repo
 
 def main():
-    # TODO: Improve argument parsing.
-    # TODO: Optionally fetch patches via HTTP.
-    if len(sys.argv) != 2:
-        print "Give one patch as an argument."
-        return
-
     # Initialize a repo object.
     Git.git_binary = 'git'
     repo = Repo('.')
+
+    # Parse arguments.
+    usage = 'usage: %prog [-p0] [(-b | --branch) <branch>] <patch>'
+    description = 'Finds a commit the patch applies against and rebases.'
+    parser = optparse.OptionParser(usage, description = description)
+    parser.add_option('-p', dest = 'p', default = 1,
+        help = 'Indicates an old p0 style patch.')
+    parser.add_option('-b', '--branch', dest = 'branch', default = None,
+        help = 'Checkout a branch before rebasing.')
+    options, args = parser.parse_args()
+
+    # Get the patch file path.
+    if (len(args) != 1):
+        parser.error('Give exactly one patch as an argument.')
+    # TODO: Optionally fetch patches via HTTP.
+    patch = args[0]
 
     # Doesn't work in bare repositories.
     # TODO: Support bare repositories.
@@ -39,10 +49,9 @@ def main():
     looping = True
     while looping:
         try:
-            repo.git.apply('-p0', sys.argv[1])
+            repo.git.apply('-p0', patch)
             looping = False
         except:
             repo.git.reset('--hard', 'HEAD~1')
-
 if __name__ == '__main__':
     main()
