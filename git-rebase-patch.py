@@ -88,7 +88,10 @@ def main():
 
     # Do the rebase.
     print 'Starting rebase now.'
-    repo.git.rebase(oldref)
+    try:
+        repo.git.rebase(oldref)
+    except:
+        print 'Manual conflict resolution needed. Use git rebase --abort to checkout the commit the patch applies to.'
 
 if __name__ == '__main__':
     main()
