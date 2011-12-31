@@ -77,6 +77,7 @@ def main():
         # Restore state.
         sys.stdout.write("\n")
         repo.git.checkout(oldref)
+        repo.git.checkout(oldref, '.')
         if options.branch:
             repo.git.branch('-d', options.branch)
         print 'Fail. Restored working copy.'
