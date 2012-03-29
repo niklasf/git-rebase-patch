@@ -75,7 +75,8 @@ do
                 compatible_head=$(git rev-parse HEAD)
                 echo "Patch applied to $compatible_head."
                 git reset --hard -q $orig_head
-                git rebase $compatible_head
+                git reset --hard -q $compatible_head
+                git rebase $orig_head
                 exit $?
         fi
 

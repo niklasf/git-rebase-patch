@@ -16,15 +16,13 @@ You can reroll a patch against the current HEAD like this:
 
 That might give you:
 
-    Trying to find a commit the patch applies to...
-    Patch applied to f8cc98cff6fb273532336194066378649c5d2ab1.
     First, rewinding head to replay your work on top of it...
-    Applying: Move the file.
+    Applying: remove-second-paragraph.patch
     Using index info to reconstruct a base tree...
     Falling back to patching base and 3-way merge...
-
-Now your latest commit has the changes of your path. It's message is the patch
-file name. Then proceed as usual.
+    Auto-merging new-file-name.txt
+    Now your latest commit has the changes of your path. It's message is the patch
+    file name. Then proceed as usual.
 
 Reroll the patch:
 
