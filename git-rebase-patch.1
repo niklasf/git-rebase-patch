@@ -1,0 +1,65 @@
+.TH GIT\-REBASE\-PATCH 1 30/03/2012 "Git Manual"
+.SH "NAME"
+git-ftp \- Automatically find the commit a patch applies to and rebase
+
+
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIgit rebase-patch\fR <patch-file>
+.fi
+.sp
+
+
+.SH "DESCRIPTION"
+.sp
+Given you have a patch that no longer applies, you have to traverse the commit
+history to find a compatible commit. After that you can branch, apply the
+patch, commit and rebase. \fIgit rebase-patch\fR automates that.
+
+
+.SH "OPTIONS"
+
+.PP
+<patch-file>
+.RS 4
+The patch file to apply. Must be a unified diff, \fI-p1\fR style.
+.RE
+
+
+.SH "LICENSE"
+.sp
+Copyright (c) 2012
+Niklas Fiekas <niklas.fiekas@googlemail.com>
+.sp
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+.sp
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+.sp
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+
+.SH "REPORTING BUGS"
+Report bugs in the issue queue on Github
+<https://github.com/niklasf/git-rebase-patch/issues> or email
+<niklas.fiekas@googlemail.com>.
+
+
+.SH "GIT"
+.sp
+Used as part of the \fBgit\fR(1) suite.
