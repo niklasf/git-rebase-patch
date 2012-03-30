@@ -1,0 +1,3 @@
+[submodule "roundup"]
+	path = roundup
+	url = git://github.com/bmizerany/roundup.git
