@@ -49,8 +49,13 @@ then
         exit 1
 fi
 
-# Remember what the original HEAD is.
+# Remember what the original HEAD is and restore it when canceling.
 orig_head=$(git rev-parse HEAD)
+cleanup() {
+        git reset --hard -q $orig_head
+        exit
+}
+trap cleanup 2
 
 # Go back in history while parent commits are available.
 echo "Trying to find a commit the patch applies to..."
