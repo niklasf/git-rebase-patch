@@ -1,6 +1,10 @@
 MANDIR = $(DESTDIR)/usr/share/man/man1
 BINDIR = $(DESTDIR)/usr/bin
 
+.PHONY: test
+test:
+	./roundup/roundup.sh
+
 .PHONY: install
 install:
 	mkdir -p $(MANDIR)
