@@ -10,7 +10,7 @@ before() {
 }
 
 it_gets_rebased() {
-        git-rebase-patch remove-second-paragraph.patch
+        ../git-rebase-patch.sh remove-second-paragraph.patch
 
         log=$(git log -n 1 --pretty=format:%s)
         test "$log" "=" "remove-second-paragraph.patch"
