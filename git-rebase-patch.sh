@@ -63,22 +63,13 @@ do
         # The patch applied. Commit and rebase.
         if [ $patch_failed = 0 ]
         then
-                echo "Patch applied to $rev."
+                # Manufacture a commit.
+                tree=$(git write-tree)
+                commit=$(git commit-tree $tree -p $rev -m $1)
 
-                if [ $dirty = 1 ]
-                then
-                        echo "Not rebasing, because that requires a clean work tree and index."
-                        exit
-                fi
+                echo "Patch applied to $rev as $commit."
 
-                GIT_INDEX_FILE=$old_index
-                export GIT_INDEX_FILE
-
-                git checkout $rev
-                git commit -q -m "$1"
-                orig_head=$(git rev-parse HEAD)
-                git reset --hard -q $rev
-                git rebase $orig_head
+                git rebase --onto HEAD $rev $commit
                 exit $?
         fi
 
