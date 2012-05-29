@@ -36,6 +36,10 @@ fi
 
 # Use a temporary index.
 index=$(mktemp)
+cleanup() {
+        rm $index
+}
+trap cleanup 2
 
 # Go back in history while parent commits are available.
 echo "Trying to find a commit the patch applies to..."
@@ -61,6 +65,7 @@ do
                 # Manufacture a commit.
                 tree=$(GIT_INDEX_FILE=$index git write-tree)
                 commit=$(git commit-tree $tree -p $rev -m $1)
+                cleanup()
 
                 echo "Patch applied to $(git rev-parse --short $rev) as $(git rev-parse --short $commit)"
 
@@ -73,4 +78,5 @@ done
 
 # No compatible commit found. Restore.
 echo "Failed to find a commit the patch applies to."
+cleanup()
 exit 1
