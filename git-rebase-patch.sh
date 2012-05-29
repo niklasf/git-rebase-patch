@@ -64,7 +64,7 @@ do
 
                 echo "Patch applied to $rev as $commit."
 
-                git rebase --onto HEAD $rev $commit
+                git cherry-pick $commit
                 exit $?
         fi
 
