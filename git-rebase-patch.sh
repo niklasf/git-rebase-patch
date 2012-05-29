@@ -20,48 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Require a clean work tree.
+# Warn on a dirty work tree.
 git rev-parse --verify HEAD >/dev/null || exit 1
 git update-index -q --ignore-submodules --refresh
-err=0
+dirty=0
 if ! git diff-files --quiet --ignore-submodules
 then
-        echo >&2 "Cannot rebase: You have unstaged changes."
-        err=1
+        echo "WARNING (dirty work tree): The patch will only be checked against actual commits."
+        dirty=1
 fi
 
-# Require a clean index.
+# Warn on a dirty index.
 if ! git diff-index --cached --quiet --ignore-submodules HEAD --
 then
-        if [ $err = 0 ]
-        then
-                echo >&2 "Cannot rebase: Your index contains uncommitted changes."
-        else
-                echo >&2 "Additionally, your index contains uncommitted changes."
-        fi
-        err=1
+        echo "WARNING (dirty index): The patch will only be checked against actual commits."
+        dirty=1
 fi
 
-# Say the user what to do when work tree or index are dirty.
-if [ $err = 1 ]
-then
-        echo >&2 "Please commit or stash them."
-        exit 1
-fi
-
-# Remember what the original HEAD is and restore it when canceling.
-orig_head=$(git rev-parse HEAD)
-cleanup() {
-        git reset --hard -q $orig_head
-        exit
-}
-trap cleanup 2
+# Use a temporary index.
+old_index=$GIT_INDEX_FILE
+GIT_INDEX_FILE=$(mktemp)
+export GIT_INDEX_FILE
 
 # Go back in history while parent commits are available.
 echo "Trying to find a commit the patch applies to..."
-err=0
-while [ $err = 0 ]
+rev=$(git rev-parse HEAD)
+while [ $? = 0 ]
 do
+        git read-tree $rev
+
         # Try to apply the patch.
         git apply --cached $1 >/dev/null 2>&1
         patch_failed=$?
@@ -76,21 +63,28 @@ do
         # The patch applied. Commit and rebase.
         if [ $patch_failed = 0 ]
         then
-                echo "Patch applied to $(git rev-parse HEAD)"
+                echo "Patch applied to $rev."
+
+                if [ $dirty = 1 ]
+                then
+                        echo "Not rebasing, because that requires a clean work tree and index."
+                        exit
+                fi
+
+                GIT_INDEX_FILE=$old_index
+                export GIT_INDEX_FILE
+
+                git checkout $rev
                 git commit -q -m "$1"
-                compatible_head=$(git rev-parse HEAD)
-                git reset --hard -q $orig_head
-                git reset --hard -q $compatible_head
+                orig_head=$(git rev-parse HEAD)
+                git reset --hard -q $rev
                 git rebase $orig_head
                 exit $?
         fi
 
-        # Set the index to be the parent of the current commit.
-        git reset -q HEAD^1 -- >/dev/null 2>&1
-        err=$?
+        rev=$(git rev-parse --verify -q $rev^)
 done
 
 # No compatible commit found. Restore.
 echo "Failed to find a commit the patch applies to."
-git reset --hard -q $orig_head
 exit 1
