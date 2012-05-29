@@ -76,9 +76,9 @@ do
         # The patch applied. Commit and rebase.
         if [ $patch_failed = 0 ]
         then
+                echo "Patch applied to $(git rev-parse HEAD)"
                 git commit -q -m "$1"
                 compatible_head=$(git rev-parse HEAD)
-                echo "Patch applied to $compatible_head."
                 git reset --hard -q $orig_head
                 git reset --hard -q $compatible_head
                 git rebase $orig_head
