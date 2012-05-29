@@ -20,6 +20,9 @@ it_gets_rebased() {
 
         log=$(git log -n 1 --pretty=format:%s HEAD~2)
         test "$log" "=" "Create a patch to remove the second paragraph."
+
+        branch=$(git symbolic-ref HEAD)
+        test "$branch" "=" "refs/heads/master"
 }
 
 after() {
