@@ -23,40 +23,35 @@
 # Warn on a dirty work tree.
 git rev-parse --verify HEAD >/dev/null || exit 1
 git update-index -q --ignore-submodules --refresh
-dirty=0
 if ! git diff-files --quiet --ignore-submodules
 then
         echo "WARNING (dirty work tree): The patch will only be checked against actual commits."
-        dirty=1
 fi
 
 # Warn on a dirty index.
 if ! git diff-index --cached --quiet --ignore-submodules HEAD --
 then
         echo "WARNING (dirty index): The patch will only be checked against actual commits."
-        dirty=1
 fi
 
 # Use a temporary index.
-old_index=$GIT_INDEX_FILE
-GIT_INDEX_FILE=$(mktemp)
-export GIT_INDEX_FILE
+index=$(mktemp)
 
 # Go back in history while parent commits are available.
 echo "Trying to find a commit the patch applies to..."
 rev=$(git rev-parse HEAD)
 while [ $? = 0 ]
 do
-        git read-tree $rev
+        GIT_INDEX_FILE=$index git read-tree $rev
 
         # Try to apply the patch.
-        git apply --cached $1 >/dev/null 2>&1
+        GIT_INDEX_FILE=$index git apply --cached $1 >/dev/null 2>&1
         patch_failed=$?
 
         # Do it again, but show the error, if the problem is the patch itself.
         if [ $patch_failed = 128 ]
         then
-                git apply --index --check $1
+                GIT_INDEX_FILE=$index git apply --index --check $1
                 exit $path_failed
         fi
 
@@ -64,7 +59,7 @@ do
         if [ $patch_failed = 0 ]
         then
                 # Manufacture a commit.
-                tree=$(git write-tree)
+                tree=$(GIT_INDEX_FILE=$index git write-tree)
                 commit=$(git commit-tree $tree -p $rev -m $1)
 
                 echo "Patch applied to $rev as $commit."
