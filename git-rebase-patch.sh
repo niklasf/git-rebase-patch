@@ -62,7 +62,7 @@ do
                 tree=$(GIT_INDEX_FILE=$index git write-tree)
                 commit=$(git commit-tree $tree -p $rev -m $1)
 
-                echo "Patch applied to $rev as $commit."
+                echo "Patch applied to $(git rev-parse --short $rev) as $(git rev-parse --short $commit)"
 
                 git cherry-pick $commit
                 exit $?
