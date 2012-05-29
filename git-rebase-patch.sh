@@ -35,9 +35,10 @@ then
 fi
 
 # Use a temporary index.
-index=$(mktemp)
+index="/tmp/$(basename $0).$$.tmp"
 cleanup() {
         rm $index
+        exit 2
 }
 trap cleanup 2
 
@@ -64,8 +65,8 @@ do
         then
                 # Manufacture a commit.
                 tree=$(GIT_INDEX_FILE=$index git write-tree)
-                commit=$(git commit-tree $tree -p $rev -m $1)
-                cleanup()
+                commit=$(git commit-tree $tree -p $rev -m "$1")
+                rm $index
 
                 echo "Patch applied to $(git rev-parse --short $rev) as $(git rev-parse --short $commit)"
 
@@ -78,5 +79,5 @@ done
 
 # No compatible commit found. Restore.
 echo "Failed to find a commit the patch applies to."
-cleanup()
+rm $index
 exit 1
