@@ -57,7 +57,7 @@ do
         if [ $patch_failed = 128 ]
         then
                 GIT_INDEX_FILE=$index git apply --index --check $1
-                exit $path_failed
+                exit $patch_failed
         fi
 
         # The patch applied. Commit and rebase.
