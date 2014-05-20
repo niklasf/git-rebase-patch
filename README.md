@@ -35,7 +35,3 @@ Reroll the patch:
 Change the commit message:
 
     git commit --amend
-
-Automated testing
------------------
-[![Build Status](https://secure.travis-ci.org/niklasf/git-rebase-patch.png?branch=master)](http://travis-ci.org/niklasf/git-rebase-patch)
